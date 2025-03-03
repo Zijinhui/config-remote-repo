@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: GATEWAY-SERVICE
+
+  cloud:
+    gateway:
+      routes:
+        - id: AUTH-SERVICE
+          uri: lb://AUTH-SERVICE/ # service name
+          predicates:
+            - Path=/auth-service/** # url pattern
+          filters:
+            - StripPrefix=1
+
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE/
+          predicates:
+            - Path=/user-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: PRODUCT-SERVICE
+          uri: lb://PRODUCT-SERVICE/
+          predicates:
+            - Path=/product-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: INBOUND-SERVICE
+          uri: lb://INBOUND-SERVICE/
+          predicates:
+            - Path=/inbound-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: OUTBOUND-SERVICE
+          uri: lb://OUTBOUND-SERVICE/
+          predicates:
+            - Path=/outbound-service/**
+          filters:
+            - StripPrefix=1
+
+        - id: COMPOSITE-SERVICE
+          uri: lb://COMPOSITE-SERVICE/  # service name for composite
+          predicates:
+              - Path=/composite-service/**  # Define how requests will reach Composite
+          filters:
+              - StripPrefix=1
+
+      discovery:
+        locator:
+          lower-case-service-id: false
+
+server:
+  port: 8966
+
+#Gateway will also be registered at the Eureka Server
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    fetch-registry: true
+    register_with_eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
